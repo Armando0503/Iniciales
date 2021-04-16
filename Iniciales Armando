@@ -1,0 +1,182 @@
+#include "p16F887.inc"   ; TODO INSERT CONFIG CODE HERE USING CONFIG BITS GENERATOR
+ 	__CONFIG	_CONFIG1,	_INTRC_OSC_NOCLKOUT & _WDT_OFF & _PWRTE_OFF & _MCLRE_ON & _CP_OFF & _CPD_OFF & _BOR_OFF & _IESO_ON & _FCMEN_ON & _LVP_OFF 
+ 	__CONFIG	_CONFIG2,	_BOR40V & _WRT_OFF
+
+RES_VECT  CODE    0x0000            ; processor reset vector
+    GOTO    START                   ; go to beginning of program
+
+MAIN_PROG CODE                      ; let linker place main program
+ 
+timer EQU 0x35
+timer2 EQU 0x34
+i EQU 0x30
+j EQU 0x31
+k EQU 0x32
+a EQU 0x33
+A EQU 0X34
+Ce EQU 0X35
+M EQU 0X36
+START
+ 
+    BANKSEL PORTA ;
+    CLRF PORTA ;Init PORTA
+    BANKSEL ANSEL ;hasta aqui apago comparadores
+    CLRF ANSEL ;digital I/O
+    CLRF ANSELH
+    BANKSEL TRISA ;
+    CLRF TRISA
+    CLRF TRISB
+    CLRF TRISC
+    CLRF TRISD
+    CLRF TRISE
+    BCF STATUS,RP1
+    BCF STATUS,RP0
+    CLRF PORTA ;pongo los puertos de forma de salida
+    CLRF PORTB
+    CLRF PORTC 
+    CLRF PORTD
+    CLRF PORTE
+inicio:
+    movlw d'30' ;establecer valor de la variable k
+    movwf A
+    movlw d'30' ;establecer valor de la variable k
+    movwf Ce
+    movlw d'30' ;establecer valor de la variable k
+    movwf M
+    
+LETRAJ:
+      ;PASO 1
+    MOVLW b'01000000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'11111101'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 2
+    MOVLW b'00111000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'01111110'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 3
+    MOVLW b'00000100'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'00000001'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+    decfsz M,f 
+    goto LETRAJ
+
+LETRAA:
+      ;PASO 1
+    MOVLW b'01000000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'10000000'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 2
+    MOVLW b'00111000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'01110111'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 3
+    MOVLW b'00000100'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'10000000'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+    decfsz A,f 
+    goto LETRAA
+
+LETRAG:
+      ;PASO 1
+    MOVLW b'10000000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'11000011'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 2
+    MOVLW b'01000000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'10111101'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 3
+    MOVLW b'00110000'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'01111110'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+    
+    MOVLW b'00001100'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'01110110'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+      ;PASO 4
+    MOVLW b'00000010'  ;ENCENDE 7 EN D fila
+    MOVWF PORTD
+    MOVLW b'10110001'  ;ENCENDE 7 EN B columna
+    MOVWF PORTB
+    CALL RETARDO ;rutina de tiempo
+    decfsz Ce,f 
+    goto LETRAG
+
+    
+   
+    GOTO inicio
+RETARDO:
+    nop	      ;NOPs de relleno (ajuste de tiempo)
+    movlw d'1' ;establecer valor de la variable 3 o 6
+    movwf i
+iloop:
+    nop	      ;NOPs de relleno (ajuste de tiempo)
+    movlw d'43' ;establecer valor de la variable j
+    movwf j
+jloop:	
+    nop         ;NOPs de relleno (ajuste de tiempo)
+    nop
+    nop
+    movlw d'60' ;establecer valor de la variable k
+    movwf k
+kloop:	
+    decfsz k,f  
+    goto kloop2 ;[i][j][k]
+    decfsz j,f
+    goto jloop2
+    decfsz i,f
+    goto iloop2
+    movlw d'4' ;establecer valor de la variable k
+    movwf a
+    decfsz a,f  
+    goto $-1 
+    return	;salir de la rutina de tiempo y regresar al 
+		;valor de contador de programa 58}
+RETARDO2:
+    nop	      ;NOPs de relleno (ajuste de tiempo)
+    movlw d'160' ;establecer valor de la variable 3 o 6
+    movwf i
+iloop2:
+    nop	      ;NOPs de relleno (ajuste de tiempo)
+    movlw d'43' ;establecer valor de la variable j
+    movwf j
+jloop2:	
+    nop         ;NOPs de relleno (ajuste de tiempo)
+    nop
+    nop
+    movlw d'60' ;establecer valor de la variable k
+    movwf k
+kloop2:	
+    decfsz k,f  
+    goto kloop2 ;[i][j][k]
+    decfsz j,f
+    goto jloop2
+    decfsz i,f
+    goto iloop2
+    movlw d'4' ;establecer valor de la variable k
+    movwf a
+    decfsz a,f  
+    goto $-1 
+    return	;salir de la rutina de tiempo y regresar al 
+		;valor de contador de programa 58}
+    END
